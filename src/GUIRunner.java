@@ -1,5 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 
@@ -14,6 +15,8 @@ public class GUIRunner extends Canvas implements Runnable{
     private JFrame frame;
     private BufferedImage image;
     private int[] pixels;
+    private int width;
+    private int height;
     private int scale = 1;
     private Thread thread;
     private boolean running = false;
@@ -23,12 +26,14 @@ public class GUIRunner extends Canvas implements Runnable{
     private Ball ball;
 
     public GUIRunner(int w, int h) {
-        image = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+        width = w;
+        height = h;
+        image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
-        Dimension size = new Dimension(scale*w, scale*h);
+        Dimension size = new Dimension(scale*width, scale*height);
         setPreferredSize(size);
         frame = new JFrame();
-        ball = new Ball(w/2,h/2);
+        ball = new Ball(width/2,height/2);
     }
 
     private synchronized void start() {
@@ -73,12 +78,41 @@ public class GUIRunner extends Canvas implements Runnable{
         stop();
     }
 
-    private void draw() {
+    private void render() {
+        int x = ball.getX();
+        int y = ball.getY();
 
+        for (int j = 0 ; j < ball.getDiameter() ; j++) {
+            for (int i = 0 ; i < ball.getDiameter() ; i++) {
+                if (ball.getPixels()[j*ball.getDiameter()+i] != 0)
+                    pixels[(y+j)*width + (x+i)] = ball.getPixels()[j*ball.getDiameter()+i];
+            }
+        }
+    }
+
+    private void clear() {
+        for (int i = 0 ; i < pixels.length ; i++) {
+            pixels[i] = 0;
+        }
+    }
+
+    private void draw() {
+        BufferStrategy bs = getBufferStrategy();
+        if (bs == null) {
+            createBufferStrategy(3);
+            return;
+        }
+        clear();
+        render();
+
+        Graphics g = bs.getDrawGraphics();
+        g.drawImage(image, 0, 0, width, height, null);
+        g.dispose();
+        bs.show();
     }
 
     private void update(){
-
+        ball.update(1.0/ups);
     }
 
     public static void main(String[] args) {

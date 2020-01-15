@@ -16,15 +16,15 @@ public class Ball {
     public Ball(double x, double y) {
         this.x = x;
         this.y = y;
-        this.vx = 0;
-        this.vy = 0;
+        this.vx = 10;
+        this.vy = 10;
         this.diameter = 20;
         this.color = 0xFFFFFFFF;
         createGraphics();
     }
 
     private void createGraphics() {
-        int[] pixels = new int[diameter*diameter];
+        pixels = new int[diameter*diameter];
         int center = diameter/2;
         for (int y = 0 ; y < diameter ; y++) {
             for (int x = 0 ; x < diameter ; x++) {
@@ -42,7 +42,19 @@ public class Ball {
         y += vy*deltaT;
     }
 
-    public int[] draw() {
+    public int[] getPixels() {
         return pixels;
+    }
+
+    public int getX() {
+        return (int)Math.round(x);
+    }
+
+    public int getY() {
+        return (int)Math.round(y);
+    }
+
+    public int getDiameter() {
+        return diameter;
     }
 }
