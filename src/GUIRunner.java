@@ -20,12 +20,15 @@ public class GUIRunner extends Canvas implements Runnable{
     private int fps = 60;
     private int ups = 100;
 
+    private Ball ball;
+
     public GUIRunner(int w, int h) {
         image = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
         pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
         Dimension size = new Dimension(scale*w, scale*h);
         setPreferredSize(size);
         frame = new JFrame();
+        ball = new Ball(w/2,h/2);
     }
 
     private synchronized void start() {
