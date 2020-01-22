@@ -16,8 +16,8 @@ public class Ball {
     public Ball(double x, double y) {
         this.x = x;
         this.y = y;
-        this.vx = 10;
-        this.vy = 10;
+        this.vx = 50;
+        this.vy = 50;
         this.diameter = 20;
         this.color = 0xFFFFFFFF;
         createGraphics();

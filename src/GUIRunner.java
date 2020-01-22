@@ -15,25 +15,23 @@ public class GUIRunner extends Canvas implements Runnable{
     private JFrame frame;
     private BufferedImage image;
     private int[] pixels;
-    private int width;
-    private int height;
+
     private int scale = 1;
     private Thread thread;
     private boolean running = false;
     private int fps = 60;
-    private int ups = 100;
+    private int ups = 60;
 
-    private Ball ball;
+    private World world;
 
     public GUIRunner(int w, int h) {
-        width = w;
-        height = h;
-        image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        world = new World(w,h);
+        image = new BufferedImage(world.getWidth(), world.getHeight(), BufferedImage.TYPE_INT_RGB);
         pixels = ((DataBufferInt) image.getRaster().getDataBuffer()).getData();
-        Dimension size = new Dimension(scale*width, scale*height);
+        Dimension size = new Dimension(scale*world.getWidth(), scale*world.getHeight());
         setPreferredSize(size);
         frame = new JFrame();
-        ball = new Ball(width/2,height/2);
+
     }
 
     private synchronized void start() {
@@ -79,15 +77,7 @@ public class GUIRunner extends Canvas implements Runnable{
     }
 
     private void render() {
-        int x = ball.getX();
-        int y = ball.getY();
-
-        for (int j = 0 ; j < ball.getDiameter() ; j++) {
-            for (int i = 0 ; i < ball.getDiameter() ; i++) {
-                if (ball.getPixels()[j*ball.getDiameter()+i] != 0)
-                    pixels[(y+j)*width + (x+i)] = ball.getPixels()[j*ball.getDiameter()+i];
-            }
-        }
+        world.render(pixels);
     }
 
     private void clear() {
@@ -106,13 +96,13 @@ public class GUIRunner extends Canvas implements Runnable{
         render();
 
         Graphics g = bs.getDrawGraphics();
-        g.drawImage(image, 0, 0, width, height, null);
+        g.drawImage(image, 0, 0, world.getWidth(), world.getHeight(), null);
         g.dispose();
         bs.show();
     }
 
     private void update(){
-        ball.update(1.0/ups);
+        world.update(1.0/ups);
     }
 
     public static void main(String[] args) {
